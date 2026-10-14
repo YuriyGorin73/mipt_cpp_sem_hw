@@ -1,59 +1,78 @@
 #include <iostream>
 
-void deposit(int& balance, int amount) {
-    if (amount <= 0) {
-        std::cout << "error\n";
-        return;
+bool equal(const char* first, const char* second) {
+    int i = 0;
+    while (first[i] && second[i]) {
+        if (first[i] != second[i])
+            return false;
+        i++;
     }
-    balance += amount;
+    return first[i] == second[i];
+}
+
+void deposit(int& balance, int amount) {
+    if (amount <= 0)
+        std::cout << "error\n";
+    else
+        balance += amount;
 }
 
 void withdraw(int& balance, int amount) {
-    if (amount <= 0 || amount > balance) {
+    if (amount <= 0 || amount > balance)
         std::cout << "error\n";
-        return;
-    }
-    balance -= amount;
+    else
+        balance -= amount;
 }
 
-void showBalance(int& balance) {
+void showBalance(int& balance, int) {
     std::cout << balance << '\n';
 }
 
-void reset(int& balance) {
+void reset(int& balance, int) {
     balance = 0;
 }
 
-void doubleBalance(int& balance) {
+void doubleBalance(int& balance, int) {
     balance *= 2;
 }
 
 int main() {
     int balance = 0;
-    char command[20];
+    char command[100];
+    int amount;
 
-    void (*operations[])(int&) = {showBalance, reset, doubleBalance};
+    const char* names[] = {
+        "deposit", "withdraw", "balance", "reset", "double"
+    };
+
+    void (*operations[])(int&, int) = {
+        deposit, withdraw, showBalance, reset, doubleBalance
+    };
 
     while (std::cin >> command) {
-        if (command[0] == 's' && command[1] == 't')
+        if (equal(command, "stop"))
             break;
 
-        if (command[0] == 'b') {
-            showBalance(balance);
-        } else if (command[0] == 'r') {
-            reset(balance);
-        } else if (command[0] == 'd' && command[1] == 'o') {
-            int amount;
-            std::cin >> amount;
-            deposit(balance, amount);
-        } else if (command[0] == 'w') {
-            int amount;
-            std::cin >> amount;
-            withdraw(balance, amount);
-        } else if (command[0] == 'd' && command[1] == 'o') {
-            doubleBalance(balance);
-        } else {
+        int operation = -1;
+
+        for (int i = 0; i < 5; i++) {
+            if (equal(command, names[i])) {
+                operation = i;
+                break;
+            }
+        }
+
+        if (operation == -1) {
             std::cout << "error\n";
+            continue;
+        }
+
+        if (operation < 2) {
+            if (!(std::cin >> amount))
+                break;
+            operations[operation](balance, amount);
+        } else {
+            operations[operation](balance, 0);
         }
     }
 
