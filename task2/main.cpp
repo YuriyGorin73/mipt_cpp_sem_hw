@@ -36,17 +36,21 @@ void doubleBalance(int& balance, int) {
     balance *= 2;
 }
 
+void increment(int& balance, int) {
+    balance++;
+}
+
 int main() {
     int balance = 0;
     char command[100];
     int amount;
 
     const char* names[] = {
-        "deposit", "withdraw", "balance", "reset", "double"
+        "deposit", "withdraw", "balance", "reset", "double", "inc"
     };
 
     void (*operations[])(int&, int) = {
-        deposit, withdraw, showBalance, reset, doubleBalance
+        deposit, withdraw, showBalance, reset, doubleBalance, increment
     };
 
     while (std::cin >> command) {
@@ -55,7 +59,7 @@ int main() {
 
         int operation = -1;
 
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 6; i++) {
             if (equal(command, names[i])) {
                 operation = i;
                 break;
